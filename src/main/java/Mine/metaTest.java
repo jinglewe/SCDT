@@ -17,8 +17,8 @@ public class metaTest {
         Element rand = pairing.getZr().newRandomElement().getImmutable();
         byte[] key = "123456".getBytes();
         byte[] m = "abcd".getBytes();
-        byte[] c = CryptoUtil.AESEncrypt(key,m);
-        byte[] m1 = CryptoUtil.AESDecrypt(key,c);
+        byte[] c = CryptoUtil.AESEncrypt(key, m);
+        byte[] m1 = CryptoUtil.AESDecrypt(key, c);
         System.out.println(Arrays.toString(m1));
 
         Long Begin = System.nanoTime();

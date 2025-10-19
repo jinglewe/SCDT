@@ -1,18 +1,13 @@
 package Mine;
 
+import Mine.entity.BlockData;
 import Mine.entity.user;
 import Mine.util.CryptoUtil;
+import Mine.util.StringUtil;
 import it.unisa.dia.gas.jpbc.Element;
-import org.whispersystems.libsignal.kdf.HKDF;
-
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-import java.math.BigInteger;
-import java.security.InvalidKeyException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
 
 public class Main {
     private static String bytesToHex(byte[] bytes) {
@@ -45,22 +40,6 @@ public class Main {
         return result;
     }
     public static void main(String[] args) throws Exception {
-//        System.out.println("pairing Time: " + (end-begin)*Math.pow(10,-6) + "ms");
-        //        // 创建一个难度为4的区块链
-//        Blockchain blockchain = new Blockchain(4);
-//
-//        // 添加一些区块
-//        blockchain.addBlock("First Block");
-//        blockchain.addBlock("Second Block");
-//        blockchain.addBlock("Third Block");
-//
-//        // 打印区块链
-//        blockchain.printChain();
-//
-//        // 验证区块链的完整性
-//        System.out.println("Is blockchain valid? " + blockchain.isChainValid());
-
-
         ServerSet.SetAS();
         ServerSet.SetCSK();  //初始化
         user alice = new user(); //sender
@@ -133,10 +112,16 @@ public class Main {
         Long retriEnd = System.nanoTime();
         System.out.println("Retri time:" + ((retriEnd-retriBegin)+PassHardenTime)*Math.pow(10,-6) + "ms"); //应该包含hpw获取时间+t计算时间+ct解密时间
 
+        BlockData bd = new BlockData();
         Long authBegin = System.nanoTime();
-        Element AuthSig = Auth.AuthID(alice,k_re);
+        Element AuthSig = Auth.AuthID(alice,k_re,bd);
         Long authEnd = System.nanoTime();
         System.out.println("U_Ipk time:" + (authEnd-authBegin)*Math.pow(10,-6) + "ms");
+        try (FileWriter writer = new FileWriter("src/main/java/Mine/output/data.txt")) {
+            writer.write(StringUtil.bytesToHex(StringUtil.BlockDataToByte(bd)));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         Long ASauthBegin = System.nanoTime();
         MessageDigest digest = MessageDigest.getInstance("SHA3-256");
